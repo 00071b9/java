@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+	
+	<util:properties location="classpath:freemarker.properties" id="fm" />
+	<!-- Spring集成freemarker -->
+	<bean class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+		<!-- 配置模板所在路径 -->
+		<property name="templateLoaderPath" value="#{fm.templateLoaderPath}" />
+		<!-- 配置编码 -->
+		<property name="defaultEncoding" value="#{fm.defaultEncoding}" />
+		<property name="freemarkerSettings">
+			<props>
+				<prop key="default_encoding">#{fm.defaultEncoding}</prop>
+			</props>
+		</property>
+	</bean>
+</beans>

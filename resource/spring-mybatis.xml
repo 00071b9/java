@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<!-- spring托管配置文件 -->
+	<util:properties location="classpath:jdbc.properties" id="jdbc" />
+
+	<!-- 配置数据库数据源 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" >
+		<!-- 配置数据源基本连接 -->
+		<property name="driverClassName" value="#{jdbc.driverClassName}" />
+		<property name="url" value="#{jdbc.url}"/>
+		<property name="username" value="#{jdbc.username}"/>
+		<property name="password" value="#{jdbc.password}"/>
+		<!-- 可选配置 -->
+		<property name="maxActive" value="#{jdbc.maxActive}"/>
+		<property name="initialSize" value="#{jdbc.initialSize}"/>
+	</bean>
+	
+	<!-- 配置会话工厂 -->
+	<bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 指定数据源 -->
+		<property name="dataSource" ref="dataSource"/>
+		<!-- 指定mybatis别名扫描 -->
+			<property name="typeAliasesPackage" value="com.ssm.entity" />
+		<!-- 扫描映射文件 -->
+		<property name="mapperLocations" value="classpath:com/ssm/dao/*.xml" />
+	</bean>
+	
+	<!-- 配置映射扫描 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 配置查询映射接口基础包 -->
+		<property name="basePackage" value="com.ssm.dao"/>
+		<!-- 配置SQLSessionFactory -->
+		<property name="sqlSessionFactoryBeanName" value="sessionFactory"/>
+	</bean>
+	
+	<!-- 托管事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- 托管事务：spring对JDBC事务的支持 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/><!-- 开启事务注解驱动 -->
+	<import resource="classpath:spring-mail.xml"/>
+	<!-- 添加spring+freemarker配置文件 -->
+	<import resource="classpath:spring-freemarker.xml"/>
+	<!-- 添加Spring+Quartz配置文件 -->
+	<import resource="classpath:spring-quartz.xml"/>
+	<!-- 添加spring-cxf配置文件 -->
+	<import resource="classpath:spring-cxf.xml"/>
+	<!-- 开启注解驱动 -->
+	<context:annotation-config/>
+	<context:component-scan base-package="com.ssm"/>
+</beans>
+

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+	<!-- 第一种.通过util标签来进入属性文件 -->
+	<util:properties location="classpath:mail-02.properties" id="email" /><!-- 用#{email.属性key} -->
+	<!-- 第二种.通过Spring的PropertyPlaceholderConfigurer来引入配置文件 -->
+	<!-- 用${定义的属性key}取值 -->
+	<!-- <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"> <property name="location" value="classpath:jdbc.properties" /> </bean> -->
+	<!-- 第三种 -->
+	<!-- <context:property-placeholder location="classpath:email.properties"/>--><!-- 加载配置文件 ${取值} -->  
+
+	<!-- Spring提供的邮件发送工具实现类 -->
+	<bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="#{email.host}" /><!-- 服务器 -->
+		<property name="port" value="#{email.port}" /><!-- 发送端口 -->
+		<property name="username" value="#{email.username}" /><!-- 用户名 -->
+		<property name="password" value="#{email.password}" /><!-- 密码 -->
+		<property name="protocol" value="#{email.protocol}" /><!-- 协议 -->
+		<property name="defaultEncoding" value="#{email.defaultEncoding}" />
+		<!-- SMTP服务器验证 -->
+		<property name="javaMailProperties">
+			<props>
+				<!-- 验证身份 -->
+				<prop key="mail.smtps.auth">true</prop>
+				<!-- 
+				<prop key="mail.smtp.ssl.enable">true</prop>
+				<prop key="mail.transport.protocol">smtps</prop>
+				 -->
+			</props>
+		</property>
+	</bean>
+</beans>

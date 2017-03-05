@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 4.调度器:SchedulerFactoryBean -->
+	<bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" depends-on="cronTriggerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="cronTriggerFactoryBean" />
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 3.定义触发器:CronTriggerFactoryBean -->
+	<bean id="cronTriggerFactoryBean" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean" depends-on="jobDetail">
+		<!-- 触发器引用任务列表 -->
+		<property name="jobDetail" ref="jobDetail" />
+		<!-- 触发器的触发频率，时间 -->
+		<property name="cronExpression" value="0 0/10 * * * ?" />
+	</bean>
+	
+	<!-- 2.托管任务列表，任务详情:MethodInvokingJobDetailFactoryBean -->
+	<bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean" depends-on="myFirstJob">
+		<!-- 设置任务Job -->
+		<property name="targetObject" ref="myFirstJob" />
+		<!-- 这是任务实际执行的方法 -->
+		<property name="targetMethod" value="testJob" />
+	</bean>
+	
+	<!-- 1. 托管任务Job -->
+	<bean id="myFirstJob" class="com.ssm.jobs.MyFirstJob" />
+	<bean id="mailJob" class="com.ssm.jobs.MailJob" />
+</beans>
